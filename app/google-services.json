@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "601579394034",
+    "firebase_url": "https://mirixa-b998b-default-rtdb.firebaseio.com",
+    "project_id": "mirixa-b998b",
+    "storage_bucket": "mirixa-b998b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601579394034:android:307187cca16e7cd51f516b",
+        "android_client_info": {
+          "package_name": "com.example.mirixa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCo2h9cTw_hKXOHyr0kKbrdIZaxGUrBEO4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

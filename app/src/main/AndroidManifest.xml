@@ -61,6 +61,12 @@
             android:name=".AdminCategoriesActivity"
             android:exported="false" />
         <activity
+            android:name=".AdminUsersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminCoursesActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProgressActivity"
             android:exported="false" />
         <activity
@@ -87,6 +93,10 @@
         <activity
             android:name=".PrivacyPolicyActivity"
             android:exported="false" />
+        <activity
+            android:name=".AdminSignupActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".AboutActivity"
             android:exported="false" />

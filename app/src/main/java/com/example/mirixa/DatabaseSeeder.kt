@@ -55,10 +55,18 @@ object DatabaseSeeder {
         addCourse(coursesMap, "db4", "5", "Cloud Firestore", "Scalable NoSQL database from Google.", "6aL0f0J2f6I", "https://firebase.google.com/docs/firestore", "mindmap_firestore", "course_firestore", "Firestore")
 
         // Atomic update
+        val users = mapOf(
+            "u1" to User("Admin", "User", "admin@mirixa.com", "u1", "admin", 4),
+            "u2" to User("John", "Doe", "john@mirixa.com", "u2", "student", 0),
+            "u3" to User("Jane", "Smith", "jane@mirixa.com", "u3", "student", 1),
+            "u4" to User("Alex", "Developer", "alex@mirixa.com", "u4", "student", 2)
+        )
+
         val updates = hashMapOf<String, Any>(
             "categories" to categories,
             "courses" to coursesMap,
-            "db_version" to 2 // Force version update to trigger re-seed
+            "users" to users,
+            "db_version" to 3
         )
         database.updateChildren(updates)
     }

@@ -62,15 +62,20 @@ class SignupActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val userId = auth.currentUser?.uid
-                    val user = User(firstName, lastName, email, userId)
+                    val user = User(firstName, lastName, email, userId, "student", 0)
                     
                     if (userId != null) {
                         database.reference.child("users").child(userId).setValue(user)
                             .addOnCompleteListener { dbTask ->
                                 if (dbTask.isSuccessful) {
-                                    // Cache name for instant loading in MainActivity
                                     getSharedPreferences("mirixa_prefs", MODE_PRIVATE).edit()
+                                        .putBoolean("is_logged_in", true)
+                                        .putString("user_uid", userId)
+                                        .putString("user_email", email)
                                         .putString("user_first_name", firstName)
+                                        .putString("user_last_name", lastName)
+                                        .putString("user_role", "Student")
+                                        .putInt("user_avatar_index", 0)
                                         .apply()
 
                                     Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show()

@@ -1,12 +1,17 @@
 package com.example.mirixa
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.view.View
+import android.util.Base64
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mirixa.databinding.ActivityCourseDetailsBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class CourseDetailsActivity : AppCompatActivity() {
 
@@ -62,16 +67,52 @@ class CourseDetailsActivity : AppCompatActivity() {
     }
 
     private fun fetchCourseDetails(id: String) {
-        FirebaseDatabase.getInstance().reference.child("courses").child(id).get()
-            .addOnSuccessListener { snapshot ->
-                val course = snapshot.getValue(Course::class.java)
-                if (course != null && !course.imageUrl.isNullOrEmpty()) {
-                    val resId = resources.getIdentifier(course.imageUrl, "drawable", packageName)
-                    if (resId != 0) {
-                        binding.ivCourseCover.setImageResource(resId)
+        FirebaseDatabase.getInstance().reference.child("courses").child(id)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        val course = snapshot.getValue(Course::class.java)
+                        if (course != null) {
+                            binding.tvCourseFullTitle.text = course.title
+                            loadCourseImageToView(course.imageUrl, binding.ivCourseCover, R.drawable.course_python)
+                        }
                     }
                 }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
+    private fun base64ToBitmap(base64Str: String): Bitmap? {
+        return try {
+            val pureBase64 = if (base64Str.contains(",")) base64Str.substringAfter(",") else base64Str
+            val decodedBytes = Base64.decode(pureBase64, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun loadCourseImageToView(imageUrl: String?, imageView: ImageView, defaultResId: Int) {
+        if (imageUrl.isNullOrEmpty()) {
+            imageView.setImageResource(defaultResId)
+            return
+        }
+        if (imageUrl.startsWith("data:image") || (imageUrl.length > 100 && !imageUrl.startsWith("http"))) {
+            val bitmap = base64ToBitmap(imageUrl)
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap)
+            } else {
+                imageView.setImageResource(defaultResId)
             }
+        } else {
+            val resId = resources.getIdentifier(imageUrl, "drawable", packageName)
+            if (resId != 0) {
+                imageView.setImageResource(resId)
+            } else {
+                imageView.setImageResource(defaultResId)
+            }
+        }
     }
 
     override fun onResume() {

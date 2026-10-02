@@ -116,15 +116,6 @@
                 app:cardBackgroundColor="#A100FF"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="2dp"
-                    android:text="SUPER ADMIN"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
@@ -243,12 +234,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
-                        android:hint="Current Password">
+                        android:hint="Current Password"
+                        app:endIconMode="password_toggle">
                         <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_current_password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textPassword"
-                            android:text="••••••••••••" />
+                            android:inputType="textPassword" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -256,15 +248,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:hint="New Password">
+                        android:hint="New Password"
+                        app:endIconMode="password_toggle">
                         <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_new_password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textPassword"
-                            android:text="••••••••••••" />
+                            android:inputType="textPassword" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_update_password"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginTop="24dp"

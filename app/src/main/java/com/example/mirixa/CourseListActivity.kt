@@ -1,8 +1,11 @@
 package com.example.mirixa
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -172,16 +175,7 @@ class CourseListActivity : AppCompatActivity() {
         }
 
         // Dynamic Image Loading from Database
-        if (!course.imageUrl.isNullOrEmpty()) {
-            val resId = resources.getIdentifier(course.imageUrl, "drawable", packageName)
-            if (resId != 0) {
-                image.setImageResource(resId)
-            } else {
-                image.setImageResource(R.drawable.ic_logo)
-            }
-        } else {
-            image.setImageResource(R.drawable.ic_logo)
-        }
+        loadCourseImageToView(course.imageUrl, image)
 
         btnEnroll.setOnClickListener {
             val intent = Intent(this, CourseDetailsActivity::class.java).apply {
@@ -193,5 +187,37 @@ class CourseListActivity : AppCompatActivity() {
         }
 
         binding.coursesContainer.addView(view)
+    }
+
+    private fun base64ToBitmap(base64Str: String): Bitmap? {
+        return try {
+            val pureBase64 = if (base64Str.contains(",")) base64Str.substringAfter(",") else base64Str
+            val decodedBytes = Base64.decode(pureBase64, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun loadCourseImageToView(imageUrl: String?, imageView: ImageView) {
+        if (imageUrl.isNullOrEmpty()) {
+            imageView.setImageResource(R.drawable.ic_logo)
+            return
+        }
+        if (imageUrl.startsWith("data:image") || (imageUrl.length > 100 && !imageUrl.startsWith("http"))) {
+            val bitmap = base64ToBitmap(imageUrl)
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap)
+            } else {
+                imageView.setImageResource(R.drawable.ic_logo)
+            }
+        } else {
+            val resId = resources.getIdentifier(imageUrl, "drawable", packageName)
+            if (resId != 0) {
+                imageView.setImageResource(resId)
+            } else {
+                imageView.setImageResource(R.drawable.ic_logo)
+            }
+        }
     }
 }

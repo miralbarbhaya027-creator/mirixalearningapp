@@ -1,16 +1,27 @@
 package com.example.mirixa
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.PointF
+import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mirixa.databinding.ActivityMindMapBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import java.io.ByteArrayOutputStream
 import kotlin.math.sqrt
 
 class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
@@ -23,6 +34,29 @@ class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
     private var oldDist = 1f
     private var mode = NONE
     private var currentCourse: Course? = null
+    private var currentCourseId: String? = null
+
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            try {
+                val inputStream = contentResolver.openInputStream(it)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                if (bitmap != null) {
+                    val base64 = bitmapToBase64(bitmap)
+                    saveAndApplyMindMapImage(base64)
+                }
+            } catch (_: Exception) {
+                Toast.makeText(this, "Failed to load image from gallery", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+        bitmap?.let {
+            val base64 = bitmapToBase64(it)
+            saveAndApplyMindMapImage(base64)
+        }
+    }
 
     companion object {
         private const val NONE = 0
@@ -36,9 +70,10 @@ class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
         setContentView(binding.root)
 
         val courseId = intent.getStringExtra("COURSE_ID")
+        currentCourseId = courseId
         val courseTitle = intent.getStringExtra("COURSE_TITLE") ?: "Mind Map"
         binding.tvCourseTitle.text = courseTitle
-        
+
         loadTopBarAvatar()
 
         if (courseId != null) {
@@ -47,40 +82,164 @@ class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
             setupImage(courseTitle, null)
         }
 
-        // Initial setup for the image view
         binding.ivMindMap.scaleType = ImageView.ScaleType.MATRIX
         binding.ivMindMap.setOnTouchListener(this)
 
         binding.btnBack.setOnClickListener { finish() }
-        
+
         binding.btnProfileTop.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
 
         binding.btnZoomIn.setOnClickListener { zoom(1.2f) }
         binding.btnZoomOut.setOnClickListener { zoom(0.8f) }
-        
+
         binding.btnFitScreen.setOnClickListener { resetMatrix() }
-        
+
         binding.btnMarkMindmapComplete.setOnClickListener {
             markMindMapAsComplete(courseTitle)
         }
 
+        binding.btnEditMindmap.setOnClickListener {
+            showEditMindMapDialog()
+        }
+
         setupBottomNav()
-        
+
         binding.ivMindMap.post { resetMatrix() }
     }
 
     private fun fetchMindMapFromDatabase(courseId: String, fallbackTitle: String) {
-        FirebaseDatabase.getInstance().reference.child("courses").child(courseId).get()
-            .addOnSuccessListener { snapshot ->
-                val course = snapshot.getValue(Course::class.java)
-                currentCourse = course
-                setupImage(course?.title ?: fallbackTitle, course?.mindmap?.image)
+        FirebaseDatabase.getInstance().reference.child("courses").child(courseId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val course = snapshot.getValue(Course::class.java)
+                    currentCourse = course
+                    setupImage(course?.title ?: fallbackTitle, course?.mindmap?.image)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    setupImage(fallbackTitle, null)
+                }
+            })
+    }
+
+    private fun saveAndApplyMindMapImage(imageStr: String) {
+        val courseId = currentCourseId
+        if (courseId != null) {
+            FirebaseDatabase.getInstance().reference.child("courses").child(courseId)
+                .child("mindmap").child("image").setValue(imageStr)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Mind Map updated successfully!", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    setupImage(binding.tvCourseTitle.text.toString(), imageStr)
+                }
+        } else {
+            setupImage(binding.tvCourseTitle.text.toString(), imageStr)
+        }
+    }
+
+    private fun showEditMindMapDialog() {
+        val options = arrayOf(
+            "🖼️ Choose Mind Map from Gallery",
+            "📸 Take Photo with Camera",
+            "🎨 Select Preset Mind Map",
+            "🗑️ Clear Mind Map"
+        )
+        AlertDialog.Builder(this)
+            .setTitle("Edit Mind Map Diagram")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> galleryLauncher.launch("image/*")
+                    1 -> cameraLauncher.launch(null)
+                    2 -> showPresetMindMapPicker()
+                    3 -> saveAndApplyMindMapImage("")
+                }
             }
-            .addOnFailureListener {
-                setupImage(fallbackTitle, null)
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showPresetMindMapPicker() {
+        val presets = arrayOf(
+            "mindmap_python", "mindmap_js", "mindmap_java", "mindmap_kotlin",
+            "mindmap_cpp", "mindmap_c", "mindmap_android_basics", "mindmap_xml",
+            "mindmap_compose", "mindmap_room", "mindmap_firebase", "mindmap_html",
+            "mindmap_css", "mindmap_react", "mindmap_php", "mindmap_ai_f",
+            "mindmap_ml", "mindmap_prompt"
+        )
+        AlertDialog.Builder(this)
+            .setTitle("Select Preset Mind Map")
+            .setItems(presets) { _, which ->
+                saveAndApplyMindMapImage(presets[which])
             }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun bitmapToBase64(bitmap: Bitmap): String {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
+        return "data:image/jpeg;base64," + Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+
+    private fun base64ToBitmap(base64Str: String): Bitmap? {
+        return try {
+            val pureBase64 = if (base64Str.contains(",")) base64Str.substringAfter(",") else base64Str
+            val decodedBytes = Base64.decode(pureBase64, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun setupImage(courseTitle: String, dbImageName: String?) {
+        if (!dbImageName.isNullOrEmpty()) {
+            if (dbImageName.startsWith("data:image") || (dbImageName.length > 100 && !dbImageName.startsWith("http"))) {
+                val bitmap = base64ToBitmap(dbImageName)
+                if (bitmap != null) {
+                    binding.ivMindMap.setImageBitmap(bitmap)
+                    binding.ivMindMap.post { resetMatrix() }
+                    return
+                }
+            } else {
+                val resId = resources.getIdentifier(dbImageName, "drawable", packageName)
+                if (resId != 0) {
+                    binding.ivMindMap.setImageResource(resId)
+                    binding.ivMindMap.post { resetMatrix() }
+                    return
+                }
+            }
+        }
+
+        var name = courseTitle.substringBefore(":").trim().lowercase().replace(" ", "_")
+        name = when (name) {
+            "javascript" -> "js"
+            "c++" -> "cpp"
+            "machine_learning" -> "ml"
+            "deep_learning" -> "dl"
+            "ai_fundamentals" -> "ai_f"
+            "neural_networks" -> "neural"
+            "prompt_engineering" -> "prompt"
+            "room_database" -> "room"
+            "firebase_firestore" -> "firestore"
+            "sqlite" -> "sqllite"
+            "mysql" -> "mysql"
+            "sql" -> "sql"
+            else -> name
+        }
+        val imageName = "mindmap_$name"
+
+        val resId = resources.getIdentifier(imageName, "drawable", packageName)
+        if (resId != 0) {
+            binding.ivMindMap.setImageResource(resId)
+        } else {
+            binding.ivMindMap.setImageResource(R.drawable.ic_logo)
+        }
+
+        binding.ivMindMap.post { resetMatrix() }
     }
 
     override fun onResume() {
@@ -119,37 +278,6 @@ class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
         val dy = (viewHeight - drawableHeight * scale) / 2f
         matrix.postTranslate(dx, dy)
         binding.ivMindMap.imageMatrix = matrix
-    }
-
-    private fun setupImage(courseTitle: String, dbImageName: String?) {
-        val imageName = dbImageName ?: run {
-            var name = courseTitle.substringBefore(":").trim().lowercase().replace(" ", "_")
-            name = when (name) {
-                "javascript" -> "js"
-                "c++" -> "cpp"
-                "machine_learning" -> "ml"
-                "deep_learning" -> "dl"
-                "ai_fundamentals" -> "ai_f"
-                "neural_networks" -> "neural"
-                "prompt_engineering" -> "prompt"
-                "room_database" -> "room"
-                "firebase_firestore" -> "firestore"
-                "sqlite" -> "sqllite"
-                "mysql" -> "mysql"
-                "sql" -> "sql"
-                else -> name
-            }
-            "mindmap_$name"
-        }
-
-        val resId = resources.getIdentifier(imageName, "drawable", packageName)
-        if (resId != 0) {
-            binding.ivMindMap.setImageResource(resId)
-        } else {
-            binding.ivMindMap.setImageResource(R.drawable.ic_logo)
-        }
-        
-        binding.ivMindMap.post { resetMatrix() }
     }
 
     private fun zoom(scale: Float) {
@@ -219,7 +347,7 @@ class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
 
     private fun markMindMapAsComplete(courseTitle: String) {
         val course = currentCourse ?: return
-        val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val courseKey = courseTitle.substringBefore(":").trim().replace(" ", "_").lowercase()
         val ref = FirebaseDatabase.getInstance().reference.child("user_progress").child(uid).child(courseKey)
 

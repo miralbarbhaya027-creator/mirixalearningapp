@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btn_back"
+            android:id="@+id/card_app_logo"
             android:layout_width="40dp"
             android:layout_height="40dp"
             app:cardBackgroundColor="@color/white"
@@ -26,11 +26,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
             <ImageView
+                android:id="@+id/iv_app_logo_top"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="10dp"
-                android:src="@drawable/ic_back"
-                app:tint="@color/text_dark" />
+                android:contentDescription="@string/app_name"
+                android:padding="6dp"
+                android:src="@drawable/ic_logo" />
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
@@ -48,10 +49,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_logo" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

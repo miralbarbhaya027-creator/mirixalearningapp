@@ -35,14 +35,18 @@ class ProfileActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
+        val prefs = getSharedPreferences("mirixa_prefs", MODE_PRIVATE)
+        val isLoggedIn = prefs.getBoolean("is_logged_in", false) || auth.currentUser != null
+        if (!isLoggedIn) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
-        fetchUserInfo(currentUser.uid)
+        val uid = auth.currentUser?.uid ?: prefs.getString("user_uid", "") ?: ""
+        if (uid.isNotEmpty()) {
+            fetchUserInfo(uid)
+        }
 
         binding.btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()

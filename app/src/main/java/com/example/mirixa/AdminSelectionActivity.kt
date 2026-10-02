@@ -14,14 +14,16 @@ class AdminSelectionActivity : AppCompatActivity() {
         binding = ActivityAdminSelectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnOpenApp.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+        binding.btnLoginAdmin.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java).apply {
+                putExtra("TARGET_ROLE", "Admin")
+            })
         }
 
-        binding.btnOpenAdmin.setOnClickListener {
-            startActivity(Intent(this, AdminActivity::class.java))
-            finish()
+        binding.btnLoginStudent.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java).apply {
+                putExtra("TARGET_ROLE", "Student")
+            })
         }
     }
 }

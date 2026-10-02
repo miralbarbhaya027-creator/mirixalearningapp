@@ -4,85 +4,102 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_light"
-    android:padding="24dp">
+    android:padding="28dp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/logo_card"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="80dp"
-        app:cardCornerRadius="28dp"
-        app:cardElevation="6dp"
-        app:strokeWidth="0dp"
-        app:cardBackgroundColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="20dp"
-            android:src="@drawable/ic_logo" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Admin Access"
-        android:textColor="@color/text_dark"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logo_card" />
-
-    <TextView
-        android:id="@+id/tv_subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Choose your destination"
-        android:textColor="@color/text_medium"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_title" />
-
+    <!-- Centered Logo & Branding Container -->
     <LinearLayout
+        android:id="@+id/brand_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/buttons_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/logo_card"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/app_name"
+                android:padding="20dp"
+                android:src="@drawable/ic_logo" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="@string/welcome_title"
+            android:textColor="@color/text_dark"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/tagline"
+            android:textColor="@color/text_medium"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <!-- Bottom Action Buttons Container -->
+    <LinearLayout
+        android:id="@+id/buttons_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_subtitle">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_open_app"
+            android:id="@+id/btn_login_admin"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
+            android:layout_height="64dp"
             android:backgroundTint="@color/primary_blue"
-            android:text="Enter Mirixa App"
+            android:text="@string/login_as_admin"
             android:textAllCaps="false"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold"
-            app:cornerRadius="16dp"
-            app:icon="@drawable/ic_home"
-            app:iconPadding="12dp" />
+            app:cornerRadius="18dp"
+            app:icon="@drawable/ic_security"
+            app:iconGravity="textStart"
+            app:iconPadding="12dp"
+            app:iconTint="@color/white" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_open_admin"
+            android:id="@+id/btn_login_student"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginTop="20dp"
-            android:text="Open Admin Control"
+            android:layout_height="64dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/login_as_student"
             android:textAllCaps="false"
-            android:textSize="18sp"
+            android:textColor="@color/primary_blue"
+            android:textSize="17sp"
             android:textStyle="bold"
-            app:cornerRadius="16dp"
-            app:icon="@drawable/ic_security"
-            app:iconPadding="12dp" />
+            app:cornerRadius="18dp"
+            app:icon="@drawable/ic_school"
+            app:iconGravity="textStart"
+            app:iconPadding="12dp"
+            app:iconTint="@color/primary_blue" />
 
     </LinearLayout>
 

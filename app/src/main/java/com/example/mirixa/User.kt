@@ -5,6 +5,6 @@ data class User(
     val lastName: String? = null,
     val email: String? = null,
     val uid: String? = null,
-    val role: String? = "Student",
+    var role: String? = "Student",
     val avatarIndex: Int = 0
 )

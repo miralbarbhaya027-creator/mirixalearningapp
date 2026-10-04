@@ -70,4 +70,6 @@
     <string name="create_admin">Create Admin</string>
     <string name="admin_sign_in">Admin Sign In</string>
     <string name="admin_sign_in_subtitle">Sign in with your administrator credentials.</string>
+    <string name="no_available_courses">No Available Courses</string>
+    <string name="coming_soon">Coming Soon!</string>
 </resources>

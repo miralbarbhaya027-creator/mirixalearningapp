@@ -20,6 +20,9 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Ensure Firebase Realtime Database is automatically seeded with categories and courses on startup
+        DatabaseSeeder.seedDatabase()
+
         Handler(Looper.getMainLooper()).postDelayed({
             checkUserStatus()
         }, 2000)

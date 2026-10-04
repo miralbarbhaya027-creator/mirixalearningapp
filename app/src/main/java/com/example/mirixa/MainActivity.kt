@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             fetchUserInfo(uid)
         }
         fetchCategories()
+        DatabaseSeeder.seedDatabase()
 
         binding.btnProfileTop.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))

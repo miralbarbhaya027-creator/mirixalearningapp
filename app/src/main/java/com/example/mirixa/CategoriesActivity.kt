@@ -29,6 +29,7 @@ class CategoriesActivity : AppCompatActivity() {
         loadTopBarAvatar()
         setupNavigation()
         fetchCategories()
+        DatabaseSeeder.seedDatabase()
 
         binding.btnProfileTop.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
@@ -72,36 +73,77 @@ class CategoriesActivity : AppCompatActivity() {
 
     private fun fetchCategories() {
         binding.loadingSpinner.visibility = View.VISIBLE
-        database.reference.child("categories").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                binding.loadingSpinner.visibility = View.GONE
-                
-                if (!snapshot.exists() || snapshot.childrenCount < 5.toLong()) {
-                    DatabaseSeeder.seedDatabase()
-                    return 
-                }
 
-                // Check if the courses node is modern (has nested quiz/video and imageUrl)
-                database.reference.child("courses").child("c1").get().addOnSuccessListener { courseSnapshot ->
-                    val course = courseSnapshot.getValue(Course::class.java)
-                    if (course == null || course.quiz == null || course.imageUrl.isNullOrEmpty()) {
-                        DatabaseSeeder.seedDatabase()
+        // Listen to courses first to calculate live course counts dynamically from Firebase
+        database.reference.child("courses").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(coursesSnapshot: DataSnapshot) {
+                val categoryCounts = mutableMapOf<String, Int>()
+                if (coursesSnapshot.exists() && coursesSnapshot.hasChildren()) {
+                    for (child in coursesSnapshot.children.mapNotNull { it.getValue(Course::class.java) }) {
+                        if (child.categoryId.isNotEmpty()) {
+                            categoryCounts[child.categoryId] = (categoryCounts[child.categoryId] ?: 0) + 1
+                        }
                     }
                 }
 
-                binding.categoriesContainer.removeAllViews()
-                val sortedCategories = snapshot.children.mapNotNull { it.getValue(Category::class.java) }
-                    .sortedBy { it.id }
-                
-                for (category in sortedCategories) {
-                    addCategoryToUi(category)
-                }
+                // Now fetch categories
+                database.reference.child("categories").addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(catSnapshot: DataSnapshot) {
+                        binding.loadingSpinner.visibility = View.GONE
+                        binding.categoriesContainer.removeAllViews()
+
+                        val categoriesList = mutableListOf<Category>()
+                        if (catSnapshot.exists() && catSnapshot.hasChildren()) {
+                            for (child in catSnapshot.children) {
+                                val cat = child.getValue(Category::class.java)
+                                if (cat != null) {
+                                    val liveCount = categoryCounts[cat.id] ?: categoryCounts[cat.name] ?: 0
+                                    categoriesList.add(cat.copy(courseCount = liveCount))
+                                }
+                            }
+                        }
+
+                        val finalCategories = if (categoriesList.isNotEmpty()) {
+                            categoriesList.sortedBy { it.id }
+                        } else {
+                            getDefaultCategories().map { cat ->
+                                cat.copy(courseCount = categoryCounts[cat.id] ?: categoryCounts[cat.name] ?: 0)
+                            }
+                        }
+
+                        for (category in finalCategories) {
+                            addCategoryToUi(category)
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        binding.loadingSpinner.visibility = View.GONE
+                        binding.categoriesContainer.removeAllViews()
+                        for (category in getDefaultCategories()) {
+                            addCategoryToUi(category)
+                        }
+                    }
+                })
             }
 
             override fun onCancelled(error: DatabaseError) {
                 binding.loadingSpinner.visibility = View.GONE
+                binding.categoriesContainer.removeAllViews()
+                for (category in getDefaultCategories()) {
+                    addCategoryToUi(category)
+                }
             }
         })
+    }
+
+    private fun getDefaultCategories(): List<Category> {
+        return listOf(
+            Category("1", "Programming Languages", 6, "code"),
+            Category("2", "Android Development", 5, "android"),
+            Category("3", "Web Development", 5, "web"),
+            Category("4", "Artificial Intelligence", 5, "ai"),
+            Category("5", "Database Management", 4, "database")
+        )
     }
 
     private fun addCategoryToUi(category: Category) {

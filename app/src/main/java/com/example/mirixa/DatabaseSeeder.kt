@@ -1,11 +1,12 @@
 package com.example.mirixa
 
+import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
 
 object DatabaseSeeder {
 
     fun seedDatabase() {
-        val database = FirebaseDatabase.getInstance().reference
+        val database = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com").reference
         
         // 1. Categories
         val categories = mapOf(
@@ -13,7 +14,7 @@ object DatabaseSeeder {
             "2" to Category("2", "Android Development", 5, "android"),
             "3" to Category("3", "Web Development", 5, "web"),
             "4" to Category("4", "Artificial Intelligence", 5, "ai"),
-            "5" to Category("5", "Database Management", 4, "database")
+            "5" to Category("5", "Database Management", 5, "database")
         )
 
         // 2. Courses
@@ -53,6 +54,7 @@ object DatabaseSeeder {
         addCourse(coursesMap, "db2", "5", "MySQL Admin", "Managing open-source database servers.", "7S_tz1z_5bA", "https://riptutorial.com/ebook/mysql", "mindmap_mysql", "cpurse_mysql", "MySQL")
         addCourse(coursesMap, "db3", "5", "SQLite Mobile", "Embedded local storage for mobile.", "byHcYRpMgI4", "https://archive.org/sqlite.pdf", "mindmap_sqllite", "cpurse_sqllite", "SQLite")
         addCourse(coursesMap, "db4", "5", "Cloud Firestore", "Scalable NoSQL database from Google.", "6aL0f0J2f6I", "https://firebase.google.com/docs/firestore", "mindmap_firestore", "course_firestore", "Firestore")
+        addCourse(coursesMap, "db5", "5", "PostgreSQL Advanced", "Enterprise relational database management and scaling.", "X9h_9h_9h_9", "https://www.postgresql.org/docs/current/tutorial.html", "mindmap_sql", "course_database", "Database")
 
         // Atomic update
         val users = mapOf(
@@ -69,6 +71,12 @@ object DatabaseSeeder {
             "db_version" to 3
         )
         database.updateChildren(updates)
+            .addOnSuccessListener {
+                Log.d("DatabaseSeeder", "Database seeded successfully!")
+            }
+            .addOnFailureListener { e ->
+                Log.e("DatabaseSeeder", "Failed to seed database: ${e.message}")
+            }
     }
 
     private fun addCourse(map: MutableMap<String, Course>, id: String, catId: String, title: String, desc: String, vId: String, pdf: String, mImg: String, iUrl: String, subject: String) {

@@ -88,10 +88,10 @@ class ProfileActivity : AppCompatActivity() {
             // Clear local cache if any
             getSharedPreferences("mirixa_prefs", MODE_PRIVATE).edit().clear().apply()
             Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, AdminSelectionActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
-            finish()
+            finishAffinity()
         }
 
         // Bottom Navigation

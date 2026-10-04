@@ -103,7 +103,7 @@ class CourseListActivity : AppCompatActivity() {
     private fun fetchUserEnrollments() {
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
         database.reference.child("user_progress").child(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     userEnrolledCourses.clear()
                     if (snapshot.exists()) {
@@ -123,27 +123,41 @@ class CourseListActivity : AppCompatActivity() {
         if (categoryId == null) return
 
         binding.loadingSpinner.visibility = View.VISIBLE
-        database.reference.child("courses").orderByChild("categoryId").equalTo(categoryId)
+        database.reference.child("courses")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     binding.loadingSpinner.visibility = View.GONE
                     binding.coursesContainer.removeAllViews()
 
+                    val coursesList = mutableListOf<Course>()
                     if (snapshot.exists() && snapshot.hasChildren()) {
-                        val coursesList = snapshot.children.mapNotNull { it.getValue(Course::class.java) }
-                            .sortedBy { it.id }
-                        
-                        for (course in coursesList) {
+                        for (child in snapshot.children) {
+                            val key = child.key ?: ""
+                            val course = child.getValue(Course::class.java)
+                            if (course != null && course.categoryId == categoryId) {
+                                val validCourse = if (course.id.isEmpty()) course.copy(id = key) else course
+                                coursesList.add(validCourse)
+                            }
+                        }
+                    }
+
+                    if (coursesList.isNotEmpty()) {
+                        binding.coursesContainer.visibility = View.VISIBLE
+                        binding.layoutEmptyCourses.visibility = View.GONE
+                        val sortedList = coursesList.sortedBy { it.id }
+                        for (course in sortedList) {
                             addCourseToUi(course)
                         }
                     } else {
-                        // Categories handles seeding now for cleaner logic
-                        Toast.makeText(this@CourseListActivity, "Fetching courses...", Toast.LENGTH_SHORT).show()
+                        binding.coursesContainer.visibility = View.GONE
+                        binding.layoutEmptyCourses.visibility = View.VISIBLE
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     binding.loadingSpinner.visibility = View.GONE
+                    binding.coursesContainer.visibility = View.GONE
+                    binding.layoutEmptyCourses.visibility = View.VISIBLE
                 }
             })
     }

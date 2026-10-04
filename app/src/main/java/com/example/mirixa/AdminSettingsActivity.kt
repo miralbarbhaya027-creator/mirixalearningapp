@@ -61,7 +61,7 @@ class AdminSettingsActivity : AppCompatActivity() {
             FirebaseAuth.getInstance().signOut()
             getSharedPreferences("mirixa_prefs", MODE_PRIVATE).edit().clear().apply()
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, AdminSelectionActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finishAffinity()

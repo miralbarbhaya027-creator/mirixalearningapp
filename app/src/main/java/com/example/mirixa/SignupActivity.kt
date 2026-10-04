@@ -20,7 +20,7 @@ class SignupActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
+        database = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com")
 
         binding.btnBackCard.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()

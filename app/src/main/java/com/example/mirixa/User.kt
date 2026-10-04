@@ -6,5 +6,7 @@ data class User(
     val email: String? = null,
     val uid: String? = null,
     val role: String? = "Student",
-    val avatarIndex: Int = 0
+    val avatarIndex: Int = 0,
+    val completedCourses: Int = 0,
+    val createdAt: Long = System.currentTimeMillis()
 )

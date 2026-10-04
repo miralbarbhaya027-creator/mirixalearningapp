@@ -14,10 +14,29 @@
         android:paddingHorizontal="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp"
+                android:src="@drawable/ic_back"
+                app:tint="@color/text_dark" />
+        </com.google.android.material.card.MaterialCardView>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/btn_back"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -69,7 +88,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Taxonomy Catalog"
+                    android:text="Dashboard"
                     android:textColor="@color/text_light"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -101,9 +120,9 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <!-- Scrollable Content -->
+    <!-- Scrollable Main Content -->
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nested_scroll_categories"
+        android:id="@+id/nested_scroll_courses"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
@@ -117,7 +136,7 @@
             android:paddingHorizontal="16dp"
             android:paddingBottom="24dp">
 
-            <!-- Breadcrumb & Header -->
+            <!-- Header Title Row -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,50 +155,188 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Academic Taxonomy › "
-                            android:textColor="@color/text_light"
-                            android:textSize="11sp" />
+                            android:text="Courses"
+                            android:textColor="@color/text_dark"
+                            android:textSize="26sp"
+                            android:textStyle="bold" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Course Catalog"
-                            android:textColor="@color/primary_blue"
-                            android:textSize="11sp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/card_background"
+                            android:backgroundTint="#F5F2FF"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="2dp"
+                            android:text="Catalog 0.0"
+                            android:textColor="@color/accent_purple"
+                            android:textSize="10sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Categories"
-                        android:textColor="@color/text_dark"
-                        android:textSize="26sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Manage curriculum tracks and subject classifications"
+                        android:text="Manage course catalog, learning assets..."
                         android:textColor="@color/text_light"
                         android:textSize="12sp" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_top_add_category"
+                    android:id="@+id/btn_top_add_course"
                     android:layout_width="wrap_content"
                     android:layout_height="44dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:backgroundTint="@color/primary_blue"
                     android:paddingHorizontal="16dp"
-                    android:text="+ Add Category"
+                    android:text="+ Add Course"
                     android:textAllCaps="false"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     app:cornerRadius="12dp" />
             </RelativeLayout>
+
+            <!-- 4 Metrics Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <!-- Stat 1: Total -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total"
+                            android:textColor="@color/text_light"
+                            android:textSize="10sp" />
+                        <TextView
+                            android:id="@+id/tv_total_courses_stat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="25"
+                            android:textColor="@color/text_dark"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Stat 2: Video -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Video"
+                            android:textColor="@color/text_light"
+                            android:textSize="10sp" />
+                        <TextView
+                            android:id="@+id/tv_video_stat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="25/25"
+                            android:textColor="@color/primary_blue"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Stat 3: PDF -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PDF"
+                            android:textColor="@color/text_light"
+                            android:textSize="10sp" />
+                        <TextView
+                            android:id="@+id/tv_pdf_stat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="25/25"
+                            android:textColor="@color/accent_purple"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Stat 4: Mind Map -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="2dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mind Map"
+                            android:textColor="@color/text_light"
+                            android:textSize="10sp" />
+                        <TextView
+                            android:id="@+id/tv_mindmap_stat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="25/25"
+                            android:textColor="@color/text_dark"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
             <!-- Search Bar -->
             <com.google.android.material.card.MaterialCardView
@@ -202,181 +359,61 @@
                         android:src="@drawable/ic_search"
                         app:tint="@color/text_light" />
                     <EditText
-                        android:id="@+id/et_search_categories"
+                        android:id="@+id/et_search_courses"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_toEndOf="@id/icon_search"
                         android:layout_marginStart="12dp"
                         android:background="@null"
-                        android:hint="Search categories by name or track..."
+                        android:hint="Search Course by name, ID or keyword..."
                         android:textSize="13sp"
                         android:inputType="text" />
                 </RelativeLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- 3 Stat Cards Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:weightSum="3">
-
-                <!-- Total Categories Stat -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:strokeWidth="0dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Total"
-                            android:textColor="@color/text_light"
-                            android:textSize="11sp" />
-                        <TextView
-                            android:id="@+id/tv_total_categories_stat"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="5"
-                            android:textColor="@color/text_dark"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Categories"
-                            android:textColor="@color/text_light"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Linked Courses Total Stat -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginHorizontal="4dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:strokeWidth="0dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Linked"
-                            android:textColor="@color/text_light"
-                            android:textSize="11sp" />
-                        <TextView
-                            android:id="@+id/tv_linked_courses_stat"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="25"
-                            android:textColor="@color/text_dark"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Courses Total"
-                            android:textColor="@color/text_light"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Tracks Stat -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="4dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:strokeWidth="0dp">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Tracks"
-                            android:textColor="@color/text_light"
-                            android:textSize="11sp" />
-                        <TextView
-                            android:id="@+id/tv_active_tracks_stat"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="5"
-                            android:textColor="@color/text_dark"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Active Depts"
-                            android:textColor="@color/text_light"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
-
-            <!-- Dynamic Category List Header -->
+            <!-- Course Structure Blueprint Header -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp">
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Structured Blueprint Slots"
-                    android:textColor="@color/text_dark"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Course Structure Blueprint"
+                        android:textColor="@color/text_dark"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:background="@drawable/card_background"
-                    android:backgroundTint="#F1F4FF"
+                    android:backgroundTint="#E0F2F1"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="3dp"
                     android:text="Schema Compliant"
-                    android:textColor="@color/primary_blue"
+                    android:textColor="#00BFA5"
                     android:textSize="10sp"
                     android:textStyle="bold" />
             </RelativeLayout>
 
-            <!-- Dynamic Category Records List -->
+            <!-- Dynamic Course List -->
             <LinearLayout
-                android:id="@+id/admin_categories_list"
+                android:id="@+id/admin_courses_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:orientation="vertical" />
 
-            <!-- Quick Add Category Form Card -->
+            <!-- Quick Add Course Blueprint Card -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cv_quick_add_card"
+                android:id="@+id/cv_quick_add_course_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -396,7 +433,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Quick Add Category"
+                            android:text="Quick Add Course Blueprint"
                             android:textColor="@color/text_dark"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -408,7 +445,7 @@
                             android:backgroundTint="#F5F2FF"
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="2dp"
-                            android:text="Form Active"
+                            android:text="Preset Mode"
                             android:textColor="@color/accent_purple"
                             android:textSize="10sp"
                             android:textStyle="bold" />
@@ -418,7 +455,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Category Name"
+                        android:text="Course Title"
                         android:textColor="@color/text_dark"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -432,12 +469,12 @@
                         app:cardElevation="0dp"
                         app:strokeWidth="0dp">
                         <EditText
-                            android:id="@+id/et_new_cat_name"
+                            android:id="@+id/et_new_course_title"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@null"
                             android:paddingHorizontal="16dp"
-                            android:hint="e.g. Web Development"
+                            android:hint="e.g. Modern JavaScript (ES6+)"
                             android:textSize="14sp"
                             android:inputType="text" />
                     </com.google.android.material.card.MaterialCardView>
@@ -446,85 +483,31 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Category Icon Type"
+                        android:text="Category Allocation ID"
                         android:textColor="@color/text_dark"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
-                    <!-- Icon Selector Horizontal Scroll Row -->
-                    <HorizontalScrollView
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:scrollbars="none">
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                        android:layout_height="48dp"
+                        android:layout_marginTop="6dp"
+                        app:cardBackgroundColor="#F8FAFF"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
+                        <EditText
+                            android:id="@+id/et_new_course_category"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@null"
+                            android:paddingHorizontal="16dp"
+                            android:hint="1 = Prog, 2 = Android, 3 = Web, 4 = AI, 5 = DB"
+                            android:textSize="13sp"
+                            android:inputType="text" />
+                    </com.google.android.material.card.MaterialCardView>
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_icon_code"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:backgroundTint="@color/primary_blue"
-                                android:paddingHorizontal="14dp"
-                                android:text="💻 Code"
-                                android:textColor="@color/white"
-                                android:textAllCaps="false"
-                                android:textSize="12sp"
-                                app:cornerRadius="10dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_icon_android"
-                                style="@style/Widget.Material3.Button.TonalButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="8dp"
-                                android:paddingHorizontal="14dp"
-                                android:text="🤖 Android"
-                                android:textAllCaps="false"
-                                android:textSize="12sp"
-                                app:cornerRadius="10dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_icon_web"
-                                style="@style/Widget.Material3.Button.TonalButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="8dp"
-                                android:paddingHorizontal="14dp"
-                                android:text="🌐 Web"
-                                android:textAllCaps="false"
-                                android:textSize="12sp"
-                                app:cornerRadius="10dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_icon_ai"
-                                style="@style/Widget.Material3.Button.TonalButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="8dp"
-                                android:paddingHorizontal="14dp"
-                                android:text="🧠 AI"
-                                android:textAllCaps="false"
-                                android:textSize="12sp"
-                                app:cornerRadius="10dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_icon_db"
-                                style="@style/Widget.Material3.Button.TonalButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="8dp"
-                                android:paddingHorizontal="14dp"
-                                android:text="💾 Data"
-                                android:textAllCaps="false"
-                                android:textSize="12sp"
-                                app:cornerRadius="10dp" />
-                        </LinearLayout>
-                    </HorizontalScrollView>
-
-                    <!-- Save & Cancel Action Row -->
+                    <!-- Save & Cancel Buttons -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -532,19 +515,19 @@
                         android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btn_save_category"
+                            android:id="@+id/btn_save_course"
                             android:layout_width="0dp"
                             android:layout_height="48dp"
                             android:layout_weight="1"
                             android:backgroundTint="@color/primary_blue"
-                            android:text="Save Category"
+                            android:text="Save Course"
                             android:textAllCaps="false"
                             android:textSize="13sp"
                             android:textStyle="bold"
                             app:cornerRadius="12dp" />
 
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btn_cancel_category"
+                            android:id="@+id/btn_cancel_course"
                             style="@style/Widget.Material3.Button.TonalButton"
                             android:layout_width="wrap_content"
                             android:layout_height="48dp"
@@ -622,9 +605,31 @@
                     android:textSize="10sp" />
             </LinearLayout>
 
-            <!-- 3. Categories (Active) -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- 3. Categories -->
+            <LinearLayout
                 android:id="@+id/nav_admin_category"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_categories"
+                    app:tint="@color/text_light" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Categories"
+                    android:textColor="@color/text_light"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <!-- 4. Courses (Active) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/nav_admin_courses"
                 android:layout_width="0dp"
                 android:layout_height="46dp"
                 android:layout_weight="1.2"
@@ -640,40 +645,18 @@
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
-                        android:src="@drawable/ic_categories"
+                        android:src="@drawable/ic_book"
                         app:tint="@color/primary_blue" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
-                        android:text="Categories"
+                        android:text="Courses"
                         android:textColor="@color/primary_blue"
                         android:textSize="11sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <!-- 4. Courses -->
-            <LinearLayout
-                android:id="@+id/nav_admin_courses"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_book"
-                    app:tint="@color/text_light" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Courses"
-                    android:textColor="@color/text_light"
-                    android:textSize="10sp" />
-            </LinearLayout>
 
             <!-- 5. Settings -->
             <LinearLayout

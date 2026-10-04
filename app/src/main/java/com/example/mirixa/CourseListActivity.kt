@@ -3,13 +3,14 @@ package com.example.mirixa
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import com.example.mirixa.databinding.ActivityCourseListBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -20,8 +21,8 @@ class CourseListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCourseListBinding
     private lateinit var database: FirebaseDatabase
-    private var categoryId: String? = null
-    private var categoryName: String? = null
+    private var categoryId: String = "1"
+    private var categoryName: String = "Programming Languages"
     private var userEnrolledCourses = mutableSetOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,11 +30,11 @@ class CourseListActivity : AppCompatActivity() {
         binding = ActivityCourseListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        database = FirebaseDatabase.getInstance()
-        categoryId = intent.getStringExtra("CATEGORY_ID")
-        categoryName = intent.getStringExtra("CATEGORY_NAME")
+        database = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com")
+        categoryId = intent.getStringExtra("CATEGORY_ID") ?: "1"
+        categoryName = intent.getStringExtra("CATEGORY_NAME") ?: "Programming Languages"
 
-        binding.tvCategoryTitle.text = categoryName ?: "Courses"
+        binding.tvCategoryTitle.text = categoryName
         
         binding.tvCategorySubtitle.text = when(categoryId) {
             "1" -> "Master the mother languages of modern software."
@@ -41,7 +42,7 @@ class CourseListActivity : AppCompatActivity() {
             "3" -> "Create the responsive frontend and robust backend of the web."
             "4" -> "Harness the power of neural networks and predictive modeling."
             "5" -> "Design and optimize structured and unstructured data storage."
-            else -> "Choose a course to start your learning journey."
+            else -> "Choose a course to start your learning journey in $categoryName."
         }
 
         loadTopBarAvatar()
@@ -117,32 +118,103 @@ class CourseListActivity : AppCompatActivity() {
     }
 
     private fun fetchCourses() {
-        if (categoryId == null) return
+        val targetCatId = categoryId
 
         binding.loadingSpinner.visibility = View.VISIBLE
-        database.reference.child("courses").orderByChild("categoryId").equalTo(categoryId)
+        database.reference.child("courses")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     binding.loadingSpinner.visibility = View.GONE
                     binding.coursesContainer.removeAllViews()
 
                     if (snapshot.exists() && snapshot.hasChildren()) {
+                        // Strict client-side filtering by categoryId
                         val coursesList = snapshot.children.mapNotNull { it.getValue(Course::class.java) }
+                            .filter { it.categoryId == targetCatId }
                             .sortedBy { it.id }
-                        
-                        for (course in coursesList) {
-                            addCourseToUi(course)
+
+                        if (coursesList.isNotEmpty()) {
+                            for (course in coursesList) {
+                                addCourseToUi(course)
+                            }
+                        } else {
+                            showEmptyCategoryState()
                         }
                     } else {
-                        // Categories handles seeding now for cleaner logic
-                        Toast.makeText(this@CourseListActivity, "Fetching courses...", Toast.LENGTH_SHORT).show()
+                        showEmptyCategoryState()
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     binding.loadingSpinner.visibility = View.GONE
+                    showEmptyCategoryState()
                 }
             })
+    }
+
+    private fun showEmptyCategoryState() {
+        binding.coursesContainer.removeAllViews()
+
+        val card = com.google.android.material.card.MaterialCardView(this).apply {
+            radius = 24f * resources.displayMetrics.density
+            cardElevation = 2f * resources.displayMetrics.density
+            setCardBackgroundColor(Color.WHITE)
+            strokeWidth = 0
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 24, 0, 24)
+            }
+        }
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(32, 48, 32, 48)
+        }
+
+        val iconCard = com.google.android.material.card.MaterialCardView(this).apply {
+            radius = 28f * resources.displayMetrics.density
+            setCardBackgroundColor(Color.parseColor("#F1F4FF"))
+            strokeWidth = 0
+            layoutParams = LinearLayout.LayoutParams(56.dpToPx(), 56.dpToPx())
+        }
+
+        val iconIv = ImageView(this).apply {
+            setImageResource(R.drawable.ic_book)
+            setColorFilter(Color.parseColor("#2962FF"))
+            setPadding(14.dpToPx(), 14.dpToPx(), 14.dpToPx(), 14.dpToPx())
+        }
+        iconCard.addView(iconIv)
+
+        val emptyTv = TextView(this).apply {
+            text = "No courses added to $categoryName yet."
+            textSize = 17f
+            setTextColor(Color.parseColor("#101820"))
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            gravity = Gravity.CENTER
+            setPadding(0, 16, 0, 0)
+        }
+
+        val subTv = TextView(this).apply {
+            text = "Admin can add courses for $categoryName from the Admin Panel."
+            textSize = 13f
+            setTextColor(Color.parseColor("#8899A6"))
+            gravity = Gravity.CENTER
+            setPadding(0, 8, 0, 0)
+        }
+
+        container.addView(iconCard)
+        container.addView(emptyTv)
+        container.addView(subTv)
+        card.addView(container)
+
+        binding.coursesContainer.addView(card)
+    }
+
+    private fun Int.dpToPx(): Int {
+        return (this * resources.displayMetrics.density).toInt()
     }
 
     private fun addCourseToUi(course: Course) {
@@ -177,10 +249,10 @@ class CourseListActivity : AppCompatActivity() {
             if (resId != 0) {
                 image.setImageResource(resId)
             } else {
-                image.setImageResource(R.drawable.ic_logo)
+                image.setImageResource(R.drawable.app_logo)
             }
         } else {
-            image.setImageResource(R.drawable.ic_logo)
+            image.setImageResource(R.drawable.app_logo)
         }
 
         btnEnroll.setOnClickListener {

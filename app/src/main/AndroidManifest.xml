@@ -22,8 +22,13 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
+
         <activity
             android:name=".AdminSelectionActivity"
             android:exported="false" />
@@ -61,6 +66,15 @@
             android:name=".AdminCategoriesActivity"
             android:exported="false" />
         <activity
+            android:name=".AdminUsersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminCoursesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminCourseStudioActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProgressActivity"
             android:exported="false" />
         <activity
@@ -70,10 +84,7 @@
             android:name=".SignupActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />

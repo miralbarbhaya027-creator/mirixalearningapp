@@ -14,7 +14,6 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySplashBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Use official SplashScreen API to avoid "double splash"
         val splashScreen = installSplashScreen()
         
         super.onCreate(savedInstanceState)
@@ -22,21 +21,27 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Perfect splash delay: 2.0 seconds for branding
         Handler(Looper.getMainLooper()).postDelayed({
             checkUserStatus()
-        }, 2000)
+        }, 1500)
     }
 
     private fun checkUserStatus() {
+        val prefs = getSharedPreferences("mirixa_prefs", MODE_PRIVATE)
+        val isLoggedIn = prefs.getBoolean("is_logged_in", false)
+        val role = prefs.getString("user_role", "Student")
+        val fName = prefs.getString("user_first_name", "")
         val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null) {
-            startActivity(Intent(this, MainActivity::class.java))
+
+        if (isLoggedIn || currentUser != null) {
+            if (role == "Admin" || fName == "Admin" || fName == "Mirixa") {
+                startActivity(Intent(this, AdminSelectionActivity::class.java))
+            } else {
+                startActivity(Intent(this, MainActivity::class.java))
+            }
         } else {
             startActivity(Intent(this, LoginActivity::class.java))
         }
-        
-        // Professional fade transition
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
     }

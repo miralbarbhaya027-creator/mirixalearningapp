@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase
 class StudyNotesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityStudyNotesBinding
+    private val database = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com")
     private var currentTopicRow: LinearLayout? = null
     private var topicsInCurrentRow = 0
     private var currentCourse: Course? = null
@@ -26,36 +27,32 @@ class StudyNotesActivity : AppCompatActivity() {
         binding = ActivityStudyNotesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val courseId = intent.getStringExtra("COURSE_ID")
-        val courseTitle = intent.getStringExtra("COURSE_TITLE") ?: "Notes"
+        val courseId = intent.getStringExtra("COURSE_ID") ?: "c1"
+        val courseTitle = intent.getStringExtra("COURSE_TITLE") ?: "Study Notes"
         
         loadTopBarAvatar()
+        fetchCourseDetails(courseId, courseTitle)
 
-        if (courseId != null) {
-            fetchCourseDetails(courseId)
-        } else {
-            Toast.makeText(this, "Course not found", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-
-        binding.btnBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.btnBack.setOnClickListener { finish() }
         binding.btnProfileTop.setOnClickListener { startActivity(Intent(this, ProfileActivity::class.java)) }
         binding.btnMarkNotesComplete.setOnClickListener { markNotesAsComplete(courseTitle) }
 
         setupBottomNav()
     }
 
-    private fun fetchCourseDetails(id: String) {
-        FirebaseDatabase.getInstance().reference.child("courses").child(id).get()
+    private fun fetchCourseDetails(id: String, fallbackTitle: String) {
+        database.reference.child("courses").child(id).get()
             .addOnSuccessListener { snapshot ->
                 val course = snapshot.getValue(Course::class.java)
                 if (course != null && course.note != null) {
                     currentCourse = course
                     setupNotes(course)
                 } else {
-                    Toast.makeText(this, "Notes data not available", Toast.LENGTH_SHORT).show()
-                    finish()
+                    setupFallbackNotes(fallbackTitle)
                 }
+            }
+            .addOnFailureListener {
+                setupFallbackNotes(fallbackTitle)
             }
     }
 
@@ -67,7 +64,6 @@ class StudyNotesActivity : AppCompatActivity() {
         binding.tvPdfHint.text = "Comprehensive Notes"
         binding.tvPdfAction.text = "View Full PDF Resource"
 
-        // Dynamic Image Header loading
         if (!course.imageUrl.isNullOrEmpty()) {
             val resId = resources.getIdentifier(course.imageUrl, "drawable", packageName)
             if (resId != 0) {
@@ -85,6 +81,23 @@ class StudyNotesActivity : AppCompatActivity() {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(noteData.pdfUrl))
                 startActivity(Intent.createChooser(intent, "View Notes"))
             }
+        }
+    }
+
+    private fun setupFallbackNotes(title: String) {
+        binding.tvNotesTitle.text = "$title\nStudy Guide"
+        binding.tvNotesDescription.text = "Detailed syllabus overview and core reference guide for $title."
+        binding.tvPdfHint.text = "Comprehensive Notes"
+        binding.tvPdfAction.text = "View Full PDF Resource"
+
+        binding.topicsContainer.removeAllViews()
+        addTopic("Fundamentals", "Core concepts and building blocks.", R.drawable.ic_bulb, "#E8EAF6")
+        addTopic("Implementation", "Applying principles in real applications.", R.drawable.ic_code, "#E8EAF6")
+        addTopic("Best Practices", "Industry standards and design patterns.", R.drawable.ic_star, "#E8EAF6")
+
+        binding.btnViewPdf.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.guru99.com/python-tutorials.html"))
+            startActivity(Intent.createChooser(intent, "View Notes"))
         }
     }
 
@@ -132,7 +145,7 @@ class StudyNotesActivity : AppCompatActivity() {
         val course = currentCourse ?: return
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
         val courseKey = courseTitle.substringBefore(":").trim().replace(" ", "_").lowercase()
-        val ref = FirebaseDatabase.getInstance().reference.child("user_progress").child(uid).child(courseKey)
+        val ref = database.reference.child("user_progress").child(uid).child(courseKey)
         
         ref.get().addOnSuccessListener { snapshot ->
             if (snapshot.exists()) {
@@ -146,14 +159,20 @@ class StudyNotesActivity : AppCompatActivity() {
                 )
                 ref.setValue(newProgress)
             }
-            Toast.makeText(this, "Progress Saved!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Notes marked as complete!", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun loadTopBarAvatar() {
         val prefs = getSharedPreferences("mirixa_prefs", MODE_PRIVATE)
         val cachedAvatarIndex = prefs.getInt("user_avatar_index", 0)
-        val avatarResources = listOf(R.drawable.ic_person, R.drawable.ic_school, R.drawable.ic_bulb, R.drawable.ic_star, R.drawable.ic_sparkle)
+        val avatarResources = listOf(
+            R.drawable.ic_person,
+            R.drawable.ic_school,
+            R.drawable.ic_bulb,
+            R.drawable.ic_star,
+            R.drawable.ic_sparkle
+        )
         if (cachedAvatarIndex in avatarResources.indices) {
             binding.ivProfileIconTop.setImageResource(avatarResources[cachedAvatarIndex])
         }

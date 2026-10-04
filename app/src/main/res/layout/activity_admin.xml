@@ -7,7 +7,7 @@
     android:background="#F8FAFF">
 
     <!-- Top Bar -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="72dp"
@@ -18,13 +18,11 @@
             android:id="@+id/btn_back"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_centerVertical="true"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="10dp"
             app:cardElevation="2dp"
-            app:strokeWidth="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:strokeWidth="0dp">
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -36,29 +34,29 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/btn_back"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
+
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_logo" />
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/app_logo" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="Admin Dashboard"
                     android:textColor="@color/text_dark"
-                    android:textSize="18sp"
+                    android:textSize="17sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -69,31 +67,31 @@
                 android:textColor="@color/primary_blue"
                 android:textSize="10sp"
                 android:textStyle="bold"
-                android:letterSpacing="0.1" />
+                android:letterSpacing="0.05" />
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/btn_profile_top"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            app:cardBackgroundColor="#E8EEFF"
+            app:cardCornerRadius="20dp"
             app:cardElevation="2dp"
-            app:strokeWidth="2dp"
-            app:strokeColor="@color/primary_blue"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:strokeWidth="0dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="AD"
                 android:textColor="@color/primary_blue"
-                android:textStyle="bold"
-                android:textSize="14sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
         </com.google.android.material.card.MaterialCardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
+    <!-- Main Scroll View -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -105,48 +103,55 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="24dp">
 
-            <!-- System Status Bar -->
+            <!-- System Telemetry Banner -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="#F0F3FF"
-                app:cardCornerRadius="12dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="#F1F5FE"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp">
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="16dp">
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
                         <View
-                            android:layout_width="8dp"
-                            android:layout_height="8dp"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
                             android:background="@drawable/dot_white"
                             android:backgroundTint="#00C853" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginStart="10dp"
                             android:text="System Overview &amp; Platform Telemetry"
-                            android:textColor="@color/text_medium"
-                            android:textSize="12sp"
+                            android:textColor="@color/text_dark"
+                            android:textSize="13sp"
                             android:textStyle="bold" />
                     </LinearLayout>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:background="@drawable/button_gradient"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/card_background"
+                        android:backgroundTint="#E8F5E9"
                         android:paddingHorizontal="10dp"
-                        android:paddingVertical="2dp"
-                        android:text="LIVE"
-                        android:textColor="@color/white"
+                        android:paddingVertical="3dp"
+                        android:text="● LIVE"
+                        android:textColor="#2E7D32"
                         android:textSize="10sp"
                         android:textStyle="bold" />
                 </RelativeLayout>
@@ -155,272 +160,308 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="20dp"
                 android:text="CORE PLATFORM METRICS"
                 android:textColor="@color/text_light"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
 
-            <!-- Registered Users Card -->
+            <!-- Card 1: Total Registered Users -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_metric_users"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="24dp"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-                    <RelativeLayout
+                    android:padding="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/icon_users_box"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardBackgroundColor="#F1F4FF"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_person"
+                            app:tint="@color/primary_blue" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/icon_users"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            app:cardBackgroundColor="#F1F4FF"
-                            app:cardCornerRadius="14dp"
-                            app:cardElevation="0dp">
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:padding="14dp"
-                                android:src="@drawable/ic_person"
-                                app:tint="@color/primary_blue" />
-                        </com.google.android.material.card.MaterialCardView>
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_toEndOf="@id/icon_users_box"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Registered Users"
+                            android:textColor="@color/text_medium"
+                            android:textSize="13sp" />
+
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_toEndOf="@id/icon_users"
-                            android:orientation="vertical">
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="2dp">
                             <TextView
+                                android:id="@+id/tv_metric_users"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Total Registered Users"
-                                android:textColor="@color/text_medium"
-                                android:textSize="13sp" />
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-                                <TextView
-                                    android:id="@+id/tv_total_users"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0"
-                                    android:textColor="@color/text_dark"
-                                    android:textSize="24sp"
-                                    android:textStyle="bold" />
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:text="↑ +14.2%"
-                                    android:textColor="#00C853"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-                                <View
-                                    android:layout_width="6dp"
-                                    android:layout_height="6dp"
-                                    android:background="@drawable/dot_white"
-                                    android:backgroundTint="@color/primary_blue" />
-                                <TextView
-                                    android:id="@+id/tv_student_count"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="6dp"
-                                    android:text="0 Students"
-                                    android:textColor="@color/text_light"
-                                    android:textSize="11sp" />
-
-                                <View
-                                    android:layout_width="6dp"
-                                    android:layout_height="6dp"
-                                    android:layout_marginStart="12dp"
-                                    android:background="@drawable/dot_white"
-                                    android:backgroundTint="@color/accent_purple" />
-                                <TextView
-                                    android:id="@+id/tv_admin_count"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="6dp"
-                                    android:text="0 Admins"
-                                    android:textColor="@color/text_light"
-                                    android:textSize="11sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </RelativeLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Courses Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/icon_courses"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            app:cardBackgroundColor="#F5F2FF"
-                            app:cardCornerRadius="14dp"
-                            app:cardElevation="0dp">
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:padding="14dp"
-                                android:src="@drawable/ic_book"
-                                app:tint="@color/accent_purple" />
-                        </com.google.android.material.card.MaterialCardView>
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_toEndOf="@id/icon_courses"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Curriculum &amp; Course Tracks"
-                                android:textColor="@color/text_medium"
-                                android:textSize="13sp" />
-                            <TextView
-                                android:id="@+id/tv_active_courses"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="26 Courses"
+                                android:text="0"
                                 android:textColor="@color/text_dark"
-                                android:textSize="24sp"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:background="@drawable/card_background"
+                                android:backgroundTint="#E8F5E9"
+                                android:paddingHorizontal="8dp"
+                                android:paddingVertical="2dp"
+                                android:text="↑ +14.2%"
+                                android:textColor="#2E7D32"
+                                android:textSize="10sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
-                    </RelativeLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Categories Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/icon_cats"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            app:cardBackgroundColor="#FFF3E0"
-                            app:cardCornerRadius="14dp"
-                            app:cardElevation="0dp">
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:padding="14dp"
-                                android:src="@drawable/ic_categories"
-                                app:tint="#FF6D00" />
-                        </com.google.android.material.card.MaterialCardView>
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_toEndOf="@id/icon_cats"
-                            android:orientation="vertical">
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="6dp">
+                            <View
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:background="@drawable/dot_white"
+                                android:backgroundTint="@color/primary_blue" />
+                            <TextView
+                                android:id="@+id/tv_students_count_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text="0 Students"
+                                android:textColor="@color/text_medium"
+                                android:textSize="11sp" />
+
+                            <View
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:layout_marginStart="16dp"
+                                android:background="@drawable/dot_white"
+                                android:backgroundTint="#A100FF" />
+                            <TextView
+                                android:id="@+id/tv_admins_count_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text="1 Admins"
+                                android:textColor="@color/text_medium"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card 2: Curriculum & Course Tracks -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_metric_courses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/icon_courses_box"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardBackgroundColor="#F5F2FF"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_book"
+                            app:tint="@color/accent_purple" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_toEndOf="@id/icon_courses_box"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Curriculum &amp; Course Tracks"
+                            android:textColor="@color/text_medium"
+                            android:textSize="13sp" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp">
+                            <TextView
+                                android:id="@+id/tv_metric_courses"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="25 Courses"
+                                android:textColor="@color/text_dark"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Active Disciplines"
-                                android:textColor="@color/text_medium"
-                                android:textSize="13sp" />
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:background="@drawable/card_background"
+                                android:backgroundTint="#F5F2FF"
+                                android:paddingHorizontal="10dp"
+                                android:paddingVertical="3dp"
+                                android:text="Active Catalog"
+                                android:textColor="@color/accent_purple"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card 3: Active Disciplines Categories -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_metric_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/icon_categories_box"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        app:cardBackgroundColor="#FFF8E1"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_categories"
+                            app:tint="#FF8F00" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_toEndOf="@id/icon_categories_box"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Active Disciplines"
+                            android:textColor="@color/text_medium"
+                            android:textSize="13sp" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp">
                             <TextView
-                                android:id="@+id/tv_total_categories"
+                                android:id="@+id/tv_metric_categories"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="5 Categories"
                                 android:textColor="@color/text_dark"
-                                android:textSize="24sp"
+                                android:textSize="22sp"
                                 android:textStyle="bold" />
-                        </LinearLayout>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:background="#E8F5E9"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="4dp"
-                            android:text="100% Operational"
-                            android:textColor="#2E7D32"
-                            android:textSize="10sp"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
-                </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:background="@drawable/card_background"
+                                android:backgroundTint="#E8F5E9"
+                                android:paddingHorizontal="10dp"
+                                android:paddingVertical="3dp"
+                                android:text="100% Operational"
+                                android:textColor="#2E7D32"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </RelativeLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Admin Modules & Management Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="24dp"
                 android:text="ADMIN MODULES &amp; MANAGEMENT"
                 android:textColor="@color/text_light"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
 
-            <!-- User Management -->
+            <!-- Module 1: User Management -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btn_view_users"
+                android:id="@+id/card_module_users"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="18dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
                     android:padding="16dp">
+
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/icon_m1"
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         app:cardBackgroundColor="#F1F4FF"
-                        app:cardCornerRadius="10dp"
+                        app:cardCornerRadius="12dp"
                         app:cardElevation="0dp">
                         <ImageView
                             android:layout_width="match_parent"
@@ -429,164 +470,197 @@
                             android:src="@drawable/ic_person"
                             app:tint="@color/primary_blue" />
                     </com.google.android.material.card.MaterialCardView>
+
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
+                        android:layout_marginStart="14dp"
+                        android:layout_toStartOf="@id/arrow_m1"
+                        android:layout_toEndOf="@id/icon_m1"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="User Management"
                             android:textColor="@color/text_dark"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="View, Add/Edit/Delete, track user access"
-                            android:textColor="@color/text_light"
+                            android:layout_marginTop="2dp"
+                            android:text="View registered learners, accounts &amp; progress"
+                            android:textColor="@color/text_medium"
                             android:textSize="12sp" />
                     </LinearLayout>
+
                     <ImageView
+                        android:id="@+id/arrow_m1"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/text_light" />
-                </LinearLayout>
+                </RelativeLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Content Studio -->
+            <!-- Module 2: Course & Content Studio -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btn_reset_db"
+                android:id="@+id/card_module_courses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="18dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
                     android:padding="16dp">
+
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/icon_m2"
                         android:layout_width="44dp"
                         android:layout_height="44dp"
-                        app:cardBackgroundColor="#FFF3E0"
-                        app:cardCornerRadius="10dp"
+                        app:cardBackgroundColor="#FFF8E1"
+                        app:cardCornerRadius="12dp"
                         app:cardElevation="0dp">
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:padding="10dp"
                             android:src="@drawable/ic_book"
-                            app:tint="#FF6D00" />
+                            app:tint="#FF8F00" />
                     </com.google.android.material.card.MaterialCardView>
+
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
+                        android:layout_marginStart="14dp"
+                        android:layout_toStartOf="@id/arrow_m2"
+                        android:layout_toEndOf="@id/icon_m2"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Course &amp; Content Studio"
                             android:textColor="@color/text_dark"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
                             android:text="Manage Video, PDF lecture notes &amp; Mind Maps"
-                            android:textColor="@color/text_light"
+                            android:textColor="@color/text_medium"
                             android:textSize="12sp" />
                     </LinearLayout>
+
                     <ImageView
+                        android:id="@+id/arrow_m2"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/text_light" />
-                </LinearLayout>
+                </RelativeLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Settings Placeholder -->
+            <!-- Module 3: Admin Profile & Settings -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btn_admin_settings"
+                android:id="@+id/card_module_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="18dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
                     android:padding="16dp">
+
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/icon_m3"
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         app:cardBackgroundColor="#F5F2FF"
-                        app:cardCornerRadius="10dp"
+                        app:cardCornerRadius="12dp"
                         app:cardElevation="0dp">
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:padding="10dp"
-                            android:src="@drawable/ic_save"
+                            android:src="@drawable/ic_security"
                             app:tint="@color/accent_purple" />
                     </com.google.android.material.card.MaterialCardView>
+
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
+                        android:layout_marginStart="14dp"
+                        android:layout_toStartOf="@id/arrow_m3"
+                        android:layout_toEndOf="@id/icon_m3"
                         android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Admin Profile &amp; Settings"
                             android:textColor="@color/text_dark"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
                             android:text="Credentials, Security tokens &amp; App backups"
-                            android:textColor="@color/text_light"
+                            android:textColor="@color/text_medium"
                             android:textSize="12sp" />
                     </LinearLayout>
+
                     <ImageView
+                        android:id="@+id/arrow_m3"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/ic_chevron_right"
                         app:tint="@color/text_light" />
-                </LinearLayout>
+                </RelativeLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Floating Quick Action Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_quick_action"
         android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_margin="20dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="80dp"
         android:backgroundTint="@color/primary_blue"
-        android:paddingHorizontal="24dp"
-        android:text="Quick Action"
+        android:paddingHorizontal="18dp"
+        android:text="+ Quick Action"
         android:textAllCaps="false"
+        android:textSize="13sp"
         android:textStyle="bold"
-        app:cornerRadius="28dp"
-        app:icon="@drawable/ic_save"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav_admin"
+        app:cornerRadius="24dp"
+        app:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Bottom Navigation Bar -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottom_nav_admin"
         android:layout_width="match_parent"
@@ -599,27 +673,42 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:background="@color/white">
-            <LinearLayout
-                android:id="@+id/nav_admin_overview"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="6dp">
+
+            <!-- 1. Overview (Active Pill) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/nav_admin_dashboard"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_home"
-                    app:tint="@color/primary_blue" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Overview"
-                    android:textColor="@color/primary_blue"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:layout_height="46dp"
+                android:layout_weight="1.2"
+                app:cardBackgroundColor="#E8EEFF"
+                app:cardCornerRadius="23dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_home"
+                        app:tint="@color/primary_blue" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="Overview"
+                        android:textColor="@color/primary_blue"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 2. Users -->
             <LinearLayout
                 android:id="@+id/nav_admin_users"
                 android:layout_width="0dp"
@@ -628,36 +717,42 @@
                 android:gravity="center"
                 android:orientation="vertical">
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/ic_person"
                     app:tint="@color/text_light" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="Users"
                     android:textColor="@color/text_light"
                     android:textSize="10sp" />
             </LinearLayout>
+
+            <!-- 3. Categories -->
             <LinearLayout
-                android:id="@+id/nav_admin_categories"
+                android:id="@+id/nav_admin_category"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/ic_categories"
                     app:tint="@color/text_light" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="Categories"
                     android:textColor="@color/text_light"
                     android:textSize="10sp" />
             </LinearLayout>
+
+            <!-- 4. Courses -->
             <LinearLayout
                 android:id="@+id/nav_admin_courses"
                 android:layout_width="0dp"
@@ -666,36 +761,41 @@
                 android:gravity="center"
                 android:orientation="vertical">
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/ic_book"
                     app:tint="@color/text_light" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="Courses"
                     android:textColor="@color/text_light"
                     android:textSize="10sp" />
             </LinearLayout>
+
+            <!-- 5. Settings -->
             <LinearLayout
-                android:id="@+id/nav_admin_settings"
+                android:id="@+id/nav_admin_profile"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/ic_security"
                     app:tint="@color/text_light" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="Settings"
                     android:textColor="@color/text_light"
                     android:textSize="10sp" />
             </LinearLayout>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

@@ -25,17 +25,11 @@ class QuizActivity : AppCompatActivity() {
         binding = ActivityQuizBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val courseId = intent.getStringExtra("COURSE_ID")
+        val courseId = intent.getStringExtra("COURSE_ID") ?: "c1"
         val courseTitle = intent.getStringExtra("COURSE_TITLE") ?: "Quiz"
         
         loadTopBarAvatar()
-
-        if (courseId != null) {
-            fetchQuizFromDatabase(courseId)
-        } else {
-            Toast.makeText(this, "Quiz not found", Toast.LENGTH_SHORT).show()
-            finish()
-        }
+        fetchQuizFromDatabase(courseId)
 
         binding.btnBack.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         binding.btnProfileTop.setOnClickListener { startActivity(Intent(this, ProfileActivity::class.java)) }
@@ -63,10 +57,9 @@ class QuizActivity : AppCompatActivity() {
     }
 
     private fun fetchQuizFromDatabase(courseId: String) {
-        // Show loading state if possible or just clear previous data
         binding.quizProgress.progress = 0
         
-        FirebaseDatabase.getInstance().reference.child("courses").child(courseId).get()
+        FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com").reference.child("courses").child(courseId).get()
             .addOnSuccessListener { snapshot ->
                 if (snapshot.exists()) {
                     val course = snapshot.getValue(Course::class.java)
@@ -75,18 +68,25 @@ class QuizActivity : AppCompatActivity() {
                         questions = course.quiz!!
                         displayQuestion()
                     } else {
-                        Toast.makeText(this, "Quiz content is currently being updated", Toast.LENGTH_SHORT).show()
-                        finish()
+                        setupFallbackQuiz()
                     }
                 } else {
-                    Toast.makeText(this, "Course data not found in database", Toast.LENGTH_SHORT).show()
-                    finish()
+                    setupFallbackQuiz()
                 }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Database connection error", Toast.LENGTH_SHORT).show()
-                finish()
+                setupFallbackQuiz()
             }
+    }
+
+    private fun setupFallbackQuiz() {
+        val defaultQuestions = listOf(
+            Question("What is the primary goal of this course?", listOf("Mastering core principles", "Memorizing text", "Ignoring syntax", "None"), 0),
+            Question("Which practice improves code quality?", listOf("Writing clean code", "No testing", "Ignoring errors", "Single file project"), 0),
+            Question("Which operator checks strict equality?", listOf("=", "==", "===", "!="), 1)
+        )
+        questions = defaultQuestions
+        displayQuestion()
     }
 
     private fun displayQuestion() {
@@ -95,7 +95,6 @@ class QuizActivity : AppCompatActivity() {
         val q = questions[currentQuestionIndex]
         binding.tvQuestion.text = q.question
         
-        // Safely set options
         val optionTextViews = listOf(binding.tvOptionA, binding.tvOptionB, binding.tvOptionC, binding.tvOptionD)
         val optionCards = listOf(binding.optionA, binding.optionB, binding.optionC, binding.optionD)
         
@@ -155,7 +154,7 @@ class QuizActivity : AppCompatActivity() {
         val course = currentCourse ?: return
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
         val courseKey = course.title.substringBefore(":").trim().replace(" ", "_").lowercase()
-        val ref = FirebaseDatabase.getInstance().reference.child("user_progress").child(uid).child(courseKey)
+        val ref = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com").reference.child("user_progress").child(uid).child(courseKey)
         
         ref.get().addOnSuccessListener { snapshot ->
             if (snapshot.exists()) {

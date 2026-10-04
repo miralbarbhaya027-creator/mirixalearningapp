@@ -3,6 +3,7 @@ package com.example.mirixa
 import android.content.Intent
 import android.graphics.Matrix
 import android.graphics.PointF
+import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -72,7 +73,7 @@ class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
     }
 
     private fun fetchMindMapFromDatabase(courseId: String, fallbackTitle: String) {
-        FirebaseDatabase.getInstance().reference.child("courses").child(courseId).get()
+        FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com").reference.child("courses").child(courseId).get()
             .addOnSuccessListener { snapshot ->
                 val course = snapshot.getValue(Course::class.java)
                 currentCourse = course
@@ -122,7 +123,27 @@ class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
     }
 
     private fun setupImage(courseTitle: String, dbImageName: String?) {
-        val imageName = dbImageName ?: run {
+        if (!dbImageName.isNullOrEmpty()) {
+            if (dbImageName.startsWith("content://") || dbImageName.startsWith("file://") || dbImageName.startsWith("http")) {
+                try {
+                    binding.ivMindMap.setImageURI(Uri.parse(dbImageName))
+                    binding.ivMindMap.post { resetMatrix() }
+                    return
+                } catch (e: Exception) {
+                    // Fallback to drawable lookup
+                }
+            }
+
+            val resId = resources.getIdentifier(dbImageName, "drawable", packageName)
+            if (resId != 0) {
+                binding.ivMindMap.setImageResource(resId)
+                binding.ivMindMap.post { resetMatrix() }
+                return
+            }
+        }
+
+        // Default / Empty State Fallback
+        val fallbackName = run {
             var name = courseTitle.substringBefore(":").trim().lowercase().replace(" ", "_")
             name = when (name) {
                 "javascript" -> "js"
@@ -142,11 +163,11 @@ class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
             "mindmap_$name"
         }
 
-        val resId = resources.getIdentifier(imageName, "drawable", packageName)
+        val resId = resources.getIdentifier(fallbackName, "drawable", packageName)
         if (resId != 0) {
             binding.ivMindMap.setImageResource(resId)
         } else {
-            binding.ivMindMap.setImageResource(R.drawable.ic_logo)
+            binding.ivMindMap.setImageResource(R.drawable.app_logo)
         }
         
         binding.ivMindMap.post { resetMatrix() }
@@ -221,7 +242,7 @@ class MindMapActivity : AppCompatActivity(), View.OnTouchListener {
         val course = currentCourse ?: return
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
         val courseKey = courseTitle.substringBefore(":").trim().replace(" ", "_").lowercase()
-        val ref = FirebaseDatabase.getInstance().reference.child("user_progress").child(uid).child(courseKey)
+        val ref = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com").reference.child("user_progress").child(uid).child(courseKey)
 
         ref.get().addOnSuccessListener { snapshot ->
             if (snapshot.exists()) {

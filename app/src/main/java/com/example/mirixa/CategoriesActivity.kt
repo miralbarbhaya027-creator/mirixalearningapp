@@ -1,6 +1,7 @@
 package com.example.mirixa
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,13 +19,14 @@ class CategoriesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCategoriesBinding
     private lateinit var database: FirebaseDatabase
+    private val categoryList = mutableListOf<Category>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCategoriesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        database = FirebaseDatabase.getInstance()
+        database = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com")
 
         loadTopBarAvatar()
         setupNavigation()
@@ -75,33 +77,52 @@ class CategoriesActivity : AppCompatActivity() {
         database.reference.child("categories").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 binding.loadingSpinner.visibility = View.GONE
+                categoryList.clear()
                 
-                if (!snapshot.exists() || snapshot.childrenCount < 5.toLong()) {
-                    DatabaseSeeder.seedDatabase()
-                    return 
-                }
-
-                // Check if the courses node is modern (has nested quiz/video and imageUrl)
-                database.reference.child("courses").child("c1").get().addOnSuccessListener { courseSnapshot ->
-                    val course = courseSnapshot.getValue(Course::class.java)
-                    if (course == null || course.quiz == null || course.imageUrl.isNullOrEmpty()) {
-                        DatabaseSeeder.seedDatabase()
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    for (catSnapshot in snapshot.children) {
+                        val cat = catSnapshot.getValue(Category::class.java)
+                        cat?.let { categoryList.add(it) }
                     }
                 }
 
-                binding.categoriesContainer.removeAllViews()
-                val sortedCategories = snapshot.children.mapNotNull { it.getValue(Category::class.java) }
-                    .sortedBy { it.id }
-                
-                for (category in sortedCategories) {
-                    addCategoryToUi(category)
-                }
+                ensureCoreCategoriesExist()
             }
 
             override fun onCancelled(error: DatabaseError) {
                 binding.loadingSpinner.visibility = View.GONE
+                ensureCoreCategoriesExist()
             }
         })
+    }
+
+    private fun ensureCoreCategoriesExist() {
+        val coreCategories = mapOf(
+            "1" to Category("1", "Programming Languages", 6, "code"),
+            "2" to Category("2", "Android Development", 5, "android"),
+            "3" to Category("3", "Web Development", 5, "web"),
+            "4" to Category("4", "Artificial Intelligence", 5, "ai"),
+            "5" to Category("5", "Database Management", 4, "database")
+        )
+
+        val missingMap = mutableMapOf<String, Any>()
+        for ((id, cat) in coreCategories) {
+            if (categoryList.none { it.id == id }) {
+                missingMap[id] = cat
+                categoryList.add(cat)
+            }
+        }
+
+        if (missingMap.isNotEmpty()) {
+            database.reference.child("categories").updateChildren(missingMap)
+        }
+
+        categoryList.sortBy { it.id.toIntOrNull() ?: 99 }
+
+        binding.categoriesContainer.removeAllViews()
+        for (category in categoryList) {
+            addCategoryToUi(category)
+        }
     }
 
     private fun addCategoryToUi(category: Category) {
@@ -119,33 +140,33 @@ class CategoriesActivity : AppCompatActivity() {
         when (category.iconType) {
             "code" -> {
                 icon.setImageResource(R.drawable.ic_code)
-                iconContainer.setCardBackgroundColor(android.graphics.Color.parseColor("#2962FF"))
-                cardBackground.setCardBackgroundColor(android.graphics.Color.parseColor("#F2F5FF"))
+                iconContainer.setCardBackgroundColor(Color.parseColor("#2962FF"))
+                cardBackground.setCardBackgroundColor(Color.parseColor("#F2F5FF"))
             }
             "android" -> {
                 icon.setImageResource(R.drawable.ic_android)
-                iconContainer.setCardBackgroundColor(android.graphics.Color.parseColor("#A100FF"))
-                cardBackground.setCardBackgroundColor(android.graphics.Color.parseColor("#F7F2FF"))
+                iconContainer.setCardBackgroundColor(Color.parseColor("#A100FF"))
+                cardBackground.setCardBackgroundColor(Color.parseColor("#F7F2FF"))
             }
             "web" -> {
                 icon.setImageResource(R.drawable.ic_web)
-                iconContainer.setCardBackgroundColor(android.graphics.Color.parseColor("#00BFA5"))
-                cardBackground.setCardBackgroundColor(android.graphics.Color.parseColor("#E0F2F1"))
+                iconContainer.setCardBackgroundColor(Color.parseColor("#00BFA5"))
+                cardBackground.setCardBackgroundColor(Color.parseColor("#E0F2F1"))
             }
             "ai" -> {
                 icon.setImageResource(R.drawable.ic_ai)
-                iconContainer.setCardBackgroundColor(android.graphics.Color.parseColor("#FF6D00"))
-                cardBackground.setCardBackgroundColor(android.graphics.Color.parseColor("#FFF3E0"))
+                iconContainer.setCardBackgroundColor(Color.parseColor("#FF6D00"))
+                cardBackground.setCardBackgroundColor(Color.parseColor("#FFF3E0"))
             }
             "database" -> {
                 icon.setImageResource(R.drawable.ic_database)
-                iconContainer.setCardBackgroundColor(android.graphics.Color.parseColor("#D32F2F"))
-                cardBackground.setCardBackgroundColor(android.graphics.Color.parseColor("#FFEBEE"))
+                iconContainer.setCardBackgroundColor(Color.parseColor("#D32F2F"))
+                cardBackground.setCardBackgroundColor(Color.parseColor("#FFEBEE"))
             }
             else -> {
                 icon.setImageResource(R.drawable.ic_book)
-                iconContainer.setCardBackgroundColor(android.graphics.Color.parseColor("#2962FF"))
-                cardBackground.setCardBackgroundColor(android.graphics.Color.parseColor("#F2F5FF"))
+                iconContainer.setCardBackgroundColor(Color.parseColor("#2962FF"))
+                cardBackground.setCardBackgroundColor(Color.parseColor("#F2F5FF"))
             }
         }
 
@@ -158,16 +179,5 @@ class CategoriesActivity : AppCompatActivity() {
         }
 
         binding.categoriesContainer.addView(view)
-    }
-
-    private fun initializeDefaultCategories() {
-        val categories = mapOf(
-            "1" to Category("1", "Programming Languages", 6, "code"),
-            "2" to Category("2", "Android Development", 5, "android"),
-            "3" to Category("3", "Web Development", 4, "web"),
-            "4" to Category("4", "Artificial Intelligence", 5, "ai"),
-            "5" to Category("5", "Database Management", 4, "database")
-        )
-        database.reference.child("categories").setValue(categories)
     }
 }

@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
+        database = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com")
 
         val currentUser = auth.currentUser
         if (currentUser == null) {
@@ -38,36 +38,30 @@ class MainActivity : AppCompatActivity() {
         }
 
         loadProfileData()
-        fetchUserInfo(currentUser.uid)
-        fetchCategories()
-
-        binding.btnProfileTop.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
+        
+        binding.root.post {
+            fetchUserInfo(currentUser.uid)
+            fetchCategories()
+            setupContinueLearning()
+            setupFeaturedCourses()
+            setupSearchBar()
         }
 
-        binding.navProfile.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
-        }
+        binding.btnProfileTop.setOnClickListener { openLearnerPage(ProfileActivity::class.java) }
+        binding.navProfile.setOnClickListener { openLearnerPage(ProfileActivity::class.java) }
+        binding.navCategories.setOnClickListener { openLearnerPage(CategoriesActivity::class.java) }
+        binding.tvSeeAllCategories.setOnClickListener { openLearnerPage(CategoriesActivity::class.java) }
+        binding.tvSeeAllCourses.setOnClickListener { openLearnerPage(CategoriesActivity::class.java) }
+        binding.navProgress.setOnClickListener { openLearnerPage(ProgressActivity::class.java) }
+    }
 
-        binding.navCategories.setOnClickListener {
-            startActivity(Intent(this, CategoriesActivity::class.java))
+    private fun openLearnerPage(targetClass: Class<*>) {
+        if (this::class.java == targetClass) return
+        val intent = Intent(this, targetClass).apply {
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
-
-        binding.tvSeeAllCategories.setOnClickListener {
-            startActivity(Intent(this, CategoriesActivity::class.java))
-        }
-
-        binding.tvSeeAllCourses.setOnClickListener {
-            startActivity(Intent(this, CategoriesActivity::class.java))
-        }
-
-        binding.navProgress.setOnClickListener {
-            startActivity(Intent(this, ProgressActivity::class.java))
-        }
-
-        setupContinueLearning()
-        setupFeaturedCourses()
-        setupSearchBar()
+        startActivity(intent)
+        overridePendingTransition(0, 0)
     }
 
     override fun onResume() {
@@ -84,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             val greeting = getGreetingPrefix()
             binding.tvGreeting.text = "$greeting, $cachedName"
         } else {
-            binding.tvGreeting.text = "Hi, ..."
+            binding.tvGreeting.text = "Hi, Learner"
         }
 
         val avatarResources = listOf(
@@ -162,20 +156,32 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupContinueLearning() {
         val uid = auth.currentUser?.uid ?: return
-        database.reference.child("user_progress").child(uid).limitToLast(1)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists() && snapshot.hasChildren()) {
-                        val progressSnapshot = snapshot.children.first()
-                        val progress = progressSnapshot.getValue(CourseProgress::class.java)
-                        progress?.let { updateContinueLearningUi(it) }
+        
+        database.reference.child("user_progress").child(uid).get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    val progressList = mutableListOf<CourseProgress>()
+                    for (courseSnap in snapshot.children) {
+                        val progress = courseSnap.getValue(CourseProgress::class.java)
+                        if (progress != null && progress.getPercentage() < 100) {
+                            progressList.add(progress)
+                        }
+                    }
+
+                    if (progressList.isNotEmpty()) {
+                        val activeProgress = progressList.last()
                         binding.cardContinueLearning.visibility = View.VISIBLE
+                        updateContinueLearningUi(activeProgress)
                     } else {
                         binding.cardContinueLearning.visibility = View.GONE
                     }
+                } else {
+                    binding.cardContinueLearning.visibility = View.GONE
                 }
-                override fun onCancelled(error: DatabaseError) {}
-            })
+            }
+            .addOnFailureListener {
+                binding.cardContinueLearning.visibility = View.GONE
+            }
     }
 
     private fun updateContinueLearningUi(progress: CourseProgress) {
@@ -237,16 +243,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fetchCategories() {
-        database.reference.child("categories").limitToFirst(4).addValueEventListener(object : ValueEventListener {
+        database.reference.child("categories").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 binding.categoriesGrid.removeAllViews()
-                for (categorySnapshot in snapshot.children) {
-                    val category = categorySnapshot.getValue(Category::class.java)
-                    category?.let { addCategoryToHome(it) }
+                if (!snapshot.exists() || !snapshot.hasChildren()) {
+                    DatabaseSeeder.seedDatabase()
+                    populateDefaultHomeCategories()
+                    return
+                }
+
+                val categoryList = snapshot.children.mapNotNull { it.getValue(Category::class.java) }
+                    .sortedBy { it.id.toIntOrNull() ?: 99 }
+
+                if (categoryList.isEmpty()) {
+                    populateDefaultHomeCategories()
+                } else {
+                    for (category in categoryList) {
+                        addCategoryToHome(category)
+                    }
                 }
             }
-            override fun onCancelled(error: DatabaseError) {}
+
+            override fun onCancelled(error: DatabaseError) {
+                populateDefaultHomeCategories()
+            }
         })
+    }
+
+    private fun populateDefaultHomeCategories() {
+        binding.categoriesGrid.removeAllViews()
+        val defaultList = listOf(
+            Category("1", "Programming Languages", 6, "code"),
+            Category("2", "Android Development", 5, "android"),
+            Category("3", "Web Development", 5, "web"),
+            Category("4", "Artificial Intelligence", 5, "ai"),
+            Category("5", "Database Management", 4, "database")
+        )
+        for (cat in defaultList) {
+            addCategoryToHome(cat)
+        }
     }
 
     private fun addCategoryToHome(category: Category) {
@@ -261,6 +296,7 @@ class MainActivity : AppCompatActivity() {
             "android" -> icon.setImageResource(R.drawable.ic_android)
             "web" -> icon.setImageResource(R.drawable.ic_web)
             "ai" -> icon.setImageResource(R.drawable.ic_ai)
+            "database" -> icon.setImageResource(R.drawable.ic_database)
             else -> icon.setImageResource(R.drawable.ic_book)
         }
         
@@ -286,16 +322,14 @@ class MainActivity : AppCompatActivity() {
             .addOnSuccessListener { snapshot ->
                 val user = snapshot.getValue(User::class.java)
                 if (user != null) {
-                    // Update cache and refresh UI
+                    val fName = user.firstName ?: "Learner"
                     getSharedPreferences("mirixa_prefs", MODE_PRIVATE).edit()
-                        .putString("user_first_name", user.firstName)
+                        .putString("user_first_name", fName)
                         .putInt("user_avatar_index", user.avatarIndex)
                         .apply()
-                    loadProfileData()
+                    val greeting = getGreetingPrefix()
+                    binding.tvGreeting.text = "$greeting, $fName"
                 }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Failed to load user info", Toast.LENGTH_SHORT).show()
             }
     }
 }

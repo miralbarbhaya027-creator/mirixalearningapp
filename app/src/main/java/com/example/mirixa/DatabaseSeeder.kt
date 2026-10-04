@@ -58,7 +58,7 @@ object DatabaseSeeder {
         val updates = hashMapOf<String, Any>(
             "categories" to categories,
             "courses" to coursesMap,
-            "db_version" to 2 // Force version update to trigger re-seed
+            "db_version" to 4 // Force version update to trigger re-seed
         )
         database.updateChildren(updates)
     }

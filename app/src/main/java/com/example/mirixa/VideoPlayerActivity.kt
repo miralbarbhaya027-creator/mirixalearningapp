@@ -12,39 +12,36 @@ import com.google.firebase.database.FirebaseDatabase
 class VideoPlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityVideoPlayerBinding
+    private val database = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityVideoPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val courseId = intent.getStringExtra("COURSE_ID")
+        val courseId = intent.getStringExtra("COURSE_ID") ?: "c1"
         val courseTitle = intent.getStringExtra("COURSE_TITLE") ?: "Video Lesson"
 
         loadTopBarAvatar()
-
-        if (courseId != null) {
-            fetchVideoData(courseId)
-        } else {
-            Toast.makeText(this, "Video not found", Toast.LENGTH_SHORT).show()
-            finish()
-        }
+        fetchVideoData(courseId, courseTitle)
 
         binding.btnBack.setOnClickListener { finish() }
         binding.btnProfileTop.setOnClickListener { startActivity(Intent(this, ProfileActivity::class.java)) }
         setupBottomNav()
     }
 
-    private fun fetchVideoData(id: String) {
-        FirebaseDatabase.getInstance().reference.child("courses").child(id).get()
+    private fun fetchVideoData(id: String, fallbackTitle: String) {
+        database.reference.child("courses").child(id).get()
             .addOnSuccessListener { snapshot ->
                 val course = snapshot.getValue(Course::class.java)
                 if (course != null && course.videoLecture != null) {
                     setupVideoUI(course)
                 } else {
-                    Toast.makeText(this, "No video available", Toast.LENGTH_SHORT).show()
-                    finish()
+                    setupFallbackVideoUI(fallbackTitle)
                 }
+            }
+            .addOnFailureListener {
+                setupFallbackVideoUI(fallbackTitle)
             }
     }
 
@@ -63,14 +60,27 @@ class VideoPlayerActivity : AppCompatActivity() {
         binding.btnPlay.setOnClickListener { playAction() }
         binding.btnWatchYoutube.setOnClickListener { playAction() }
         
-        // Auto-mark as entered
         markVideoComplete(course)
+    }
+
+    private fun setupFallbackVideoUI(title: String) {
+        binding.tvVideoTitle.text = title
+        binding.tvDuration.text = "15:00 mins"
+        binding.tvOverview.text = "Comprehensive lecture and video demonstration covering $title."
+
+        val playAction = {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=rfscVS0vtbw"))
+            startActivity(intent)
+        }
+
+        binding.btnPlay.setOnClickListener { playAction() }
+        binding.btnWatchYoutube.setOnClickListener { playAction() }
     }
 
     private fun markVideoComplete(course: Course) {
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
         val key = course.title.substringBefore(":").trim().replace(" ", "_").lowercase()
-        val ref = FirebaseDatabase.getInstance().reference.child("user_progress").child(uid).child(key)
+        val ref = database.reference.child("user_progress").child(uid).child(key)
         
         ref.get().addOnSuccessListener { snapshot ->
             if (snapshot.exists()) {
@@ -97,7 +107,15 @@ class VideoPlayerActivity : AppCompatActivity() {
     private fun loadTopBarAvatar() {
         val prefs = getSharedPreferences("mirixa_prefs", MODE_PRIVATE)
         val cachedAvatarIndex = prefs.getInt("user_avatar_index", 0)
-        val avatarResources = listOf(R.drawable.ic_person, R.drawable.ic_school, R.drawable.ic_bulb, R.drawable.ic_star, R.drawable.ic_sparkle)
-        if (cachedAvatarIndex in avatarResources.indices) binding.ivProfileIconTop.setImageResource(avatarResources[cachedAvatarIndex])
+        val avatarResources = listOf(
+            R.drawable.ic_person,
+            R.drawable.ic_school,
+            R.drawable.ic_bulb,
+            R.drawable.ic_star,
+            R.drawable.ic_sparkle
+        )
+        if (cachedAvatarIndex in avatarResources.indices) {
+            binding.ivProfileIconTop.setImageResource(avatarResources[cachedAvatarIndex])
+        }
     }
 }

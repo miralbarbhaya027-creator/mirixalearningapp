@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mirixa.databinding.ActivityCourseDetailsBinding
 import com.google.firebase.database.FirebaseDatabase
@@ -11,23 +12,22 @@ import com.google.firebase.database.FirebaseDatabase
 class CourseDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCourseDetailsBinding
+    private val database = FirebaseDatabase.getInstance("https://mirixa-b998b-default-rtdb.firebaseio.com")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCourseDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val courseId = intent.getStringExtra("COURSE_ID") ?: ""
-        val courseTitle = intent.getStringExtra("COURSE_TITLE") ?: "Course"
+        val courseId = intent.getStringExtra("COURSE_ID") ?: "c1"
+        val courseTitle = intent.getStringExtra("COURSE_TITLE") ?: "Course Details"
         val categoryName = intent.getStringExtra("CATEGORY_NAME") ?: "Learning Path"
 
         binding.tvHeaderCategory.text = categoryName
         binding.tvCourseFullTitle.text = courseTitle
 
         loadTopBarAvatar()
-        if (courseId.isNotEmpty()) {
-            fetchCourseDetails(courseId)
-        }
+        fetchCourseDetails(courseId, courseTitle)
 
         binding.btnBack.setOnClickListener { finish() }
         binding.btnProfileTop.setOnClickListener { startActivity(Intent(this, ProfileActivity::class.java)) }
@@ -61,16 +61,24 @@ class CourseDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchCourseDetails(id: String) {
-        FirebaseDatabase.getInstance().reference.child("courses").child(id).get()
+    private fun fetchCourseDetails(id: String, fallbackTitle: String) {
+        database.reference.child("courses").child(id).get()
             .addOnSuccessListener { snapshot ->
                 val course = snapshot.getValue(Course::class.java)
-                if (course != null && !course.imageUrl.isNullOrEmpty()) {
-                    val resId = resources.getIdentifier(course.imageUrl, "drawable", packageName)
-                    if (resId != 0) {
-                        binding.ivCourseCover.setImageResource(resId)
+                if (course != null) {
+                    binding.tvCourseFullTitle.text = course.title
+                    if (!course.imageUrl.isNullOrEmpty()) {
+                        val resId = resources.getIdentifier(course.imageUrl, "drawable", packageName)
+                        if (resId != 0) {
+                            binding.ivCourseCover.setImageResource(resId)
+                        } else {
+                            binding.ivCourseCover.setImageResource(R.drawable.course_python)
+                        }
                     }
                 }
+            }
+            .addOnFailureListener {
+                binding.ivCourseCover.setImageResource(R.drawable.course_python)
             }
     }
 
@@ -82,7 +90,15 @@ class CourseDetailsActivity : AppCompatActivity() {
     private fun loadTopBarAvatar() {
         val prefs = getSharedPreferences("mirixa_prefs", MODE_PRIVATE)
         val cachedAvatarIndex = prefs.getInt("user_avatar_index", 0)
-        val avatarResources = listOf(R.drawable.ic_person, R.drawable.ic_school, R.drawable.ic_bulb, R.drawable.ic_star, R.drawable.ic_sparkle)
-        if (cachedAvatarIndex in avatarResources.indices) binding.ivProfileIconTop.setImageResource(avatarResources[cachedAvatarIndex])
+        val avatarResources = listOf(
+            R.drawable.ic_person,
+            R.drawable.ic_school,
+            R.drawable.ic_bulb,
+            R.drawable.ic_star,
+            R.drawable.ic_sparkle
+        )
+        if (cachedAvatarIndex in avatarResources.indices) {
+            binding.ivProfileIconTop.setImageResource(avatarResources[cachedAvatarIndex])
+        }
     }
 }
